@@ -1,6 +1,20 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+// import './drag_and_drop.dart';
+
+class GridUnit {
+  final double left;
+  final double top;
+  final String color;
+
+  const GridUnit({
+    required this.left,
+    required this.top,
+    required this.color,
+  });
+}
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      // home: const DragAndDrop(),
       home: const MyHomePage(),
     );
   }
@@ -34,17 +49,22 @@ class _MyHomePageState extends State<MyHomePage> {
   double touchOpac = 1;
   String selectedColor = '';
   bool canDrag = true;
+  double topPad = 50;
+  double bottPad = 30;
+  double boardPad = 0; // 4 for 5; 3 for 6
+  int squaresPerRow = 6;
+
+  List<GridUnit> grid = [];
+  Map<String, GridUnit> grid2 = {};
+
+  double posLeft = 0;
+  double posTop = 0;
 
   void colorSelected(String color) {
     print('selected: $color');
     setState(() {
       selectedColor = color;
     });
-    // Timer(const Duration(seconds: 2), () {
-    //   setState(() {
-    //     canDrag = false;
-    //   });
-    // });
   }
 
   void resetDraggables() {
@@ -54,72 +74,165 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void changePositions(
+    Object obj,
+    String current,
+  ) {
+    print('change position for: $obj');
+    var tempGrid = Map<String, GridUnit>.from(grid2);
+    var oldGrid = Map<String, GridUnit>.from(grid2); // old position
+    tempGrid.removeWhere((key, value) => value.color != obj);
+    print('$current is moving to ${tempGrid.values.first.color}');
+    oldGrid.removeWhere((key, value) => value.color != current);
+    print('should update ${oldGrid.values.first.color}');
+    print(oldGrid.keys.first);
+    grid2.update(
+      // oldGrid.keys.first,
+      '1x0',
+      (value) => const GridUnit(
+        // left: tempGrid.values.first.left,
+        // top: tempGrid.values.first.top,
+        // left: posLeft + (squareSize * 1) + (1 * boardPad),
+        // top: posTop + (squareSize * 0) + (0 * boardPad),
+        left: 0,
+        top: 0,
+        color: '',
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double squareSize = MediaQuery.of(context).size.width / 3.75;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    // final double screenHeight = MediaQuery.of(context).size.height;
+    // final double screenRatio = MediaQuery.of(context).size.aspectRatio;
+    print(screenWidth);
+    // print(screenHeight);
+    // print(screenRatio);
+    // final double squareSize = (screenWidth / 3.75);
+    // final double squareSize =
+    //     (screenWidth - boardPad * 2) / (squaresPerRow * 1.05); // for 5 squares w/ padding
+    // final double squareSize =
+    //     (screenWidth - boardPad * 2) / (squaresPerRow * 1.045); // for 6 squares w/ padding
+    final double squareSize = (screenWidth - boardPad * 2) /
+        (squaresPerRow * 1); // for 6 squares w/out padding
     // print(squareSize);
 
+    // grid = [
+    //   GridUnit(
+    //     left: posLeft + (squareSize * 0) + (0 * boardPad),
+    //     top: posTop + (squareSize * 0) + (0 * boardPad),
+    //     color: 'pink',
+    //   ),
+    //   GridUnit(
+    //     left: posLeft + (squareSize * 1) + (1 * boardPad),
+    //     top: posTop + (squareSize * 0) + (0 * boardPad),
+    //     color: 'red',
+    //   ),
+    //   GridUnit(
+    //     left: posLeft + (squareSize * 2) + (2 * boardPad),
+    //     top: posTop + (squareSize * 0) + (0 * boardPad),
+    //     color: 'deepOrange',
+    //   ),
+    //   GridUnit(
+    //     left: posLeft + (squareSize * 3) + (3 * boardPad),
+    //     top: posTop + (squareSize * 0) + (0 * boardPad),
+    //     color: 'orange',
+    //   ),
+    //   GridUnit(
+    //     left: posLeft + (squareSize * 4) + (4 * boardPad),
+    //     top: posTop + (squareSize * 0) + (0 * boardPad),
+    //     color: 'yellow',
+    //   ),
+    // ];
+
+    grid2 = {
+      '0x0': GridUnit(
+        left: posLeft + (squareSize * 0) + (0 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'pink',
+      ),
+      '1x0': GridUnit(
+        left: posLeft + (squareSize * 1) + (1 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'red',
+      ),
+      '2x0': GridUnit(
+        left: posLeft + (squareSize * 2) + (2 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'deepOrange',
+      ),
+      '3x0': GridUnit(
+        left: posLeft + (squareSize * 3) + (3 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'orange',
+      ),
+      '4x0': GridUnit(
+        left: posLeft + (squareSize * 4) + (4 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'yellow',
+      ),
+      '5x0': GridUnit(
+        left: posLeft + (squareSize * 5) + (5 * boardPad),
+        top: posTop + (squareSize * 0) + (0 * boardPad),
+        color: 'black',
+      ),
+      // GridUnit(
+      //   left: posLeft + (squareSize * 0) + (0 * boardPad),
+      //   top: posTop + (squareSize * 0) + (0 * boardPad),
+      // ),
+      // GridUnit(
+      //   left: posLeft + (squareSize * 1) + (1 * boardPad),
+      //   top: posTop + (squareSize * 0) + (0 * boardPad),
+      // ),
+      // GridUnit(
+      //   left: posLeft + (squareSize * 2) + (2 * boardPad),
+      //   top: posTop + (squareSize * 0) + (0 * boardPad),
+      // ),
+      // GridUnit(
+      //   left: posLeft + (squareSize * 3) + (3 * boardPad),
+      //   top: posTop + (squareSize * 0) + (0 * boardPad),
+      // ),
+      // GridUnit(
+      //   left: posLeft + (squareSize * 4) + (4 * boardPad),
+      //   top: posTop + (squareSize * 0) + (0 * boardPad),
+      // ),
+    };
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.brown,
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.only(
+          top: topPad,
+          bottom: bottPad,
+        ),
         child: Column(
           children: [
             Expanded(
-              flex: 1,
+              flex: 20,
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                  color: Colors.grey,
-                ),
+                color: Colors.grey,
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 15,
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
-                  color: Colors.white,
-                ),
+                color: Colors.white,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(boardPad),
                   child: Stack(
                     children: [
-                      // Positioned(
-                      //   left: 0,
-                      //   top: 0,
-                      //   child: Draggable<String>(
-                      //     data: 'red',
-                      //     feedback: Container(
-                      //       height: 100,
-                      //       width: 100,
-                      //       color: Colors.red[700],
-                      //     ),
-                      //     childWhenDragging: Container(
-                      //       height: 100,
-                      //       width: 100,
-                      //       color: Colors.red.withOpacity(0.5),
-                      //     ),
-                      //     child: Container(
-                      //       height: 100,
-                      //       width: 100,
-                      //       color: Colors.red,
-                      //     ),
-                      //   ),
-                      // ),
                       DragObject(
-                        left: 0,
-                        top: 0,
+                        // left: posLeft + (squareSize * 0) + (0 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        // left: grid[0].left,
+                        // top: grid[0].top,
+                        left: grid2['0x0']!.left,
+                        top: grid2['0x0']!.top,
                         size: squareSize,
                         dataColor: 'pink',
                         color: Colors.pink,
@@ -128,10 +241,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 110,
-                        top: 0,
+                        // left: posLeft + (squareSize * 1) + (1 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        // left: grid[1].left,
+                        // top: grid[1].top,
+                        left: grid2['1x0']!.left,
+                        top: grid2['1x0']!.top,
                         size: squareSize,
                         dataColor: 'red',
                         color: Colors.red,
@@ -140,10 +258,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 220,
-                        top: 0,
+                        // left: posLeft + (squareSize * 2) + (2 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        // left: grid[2].left,
+                        // top: grid[2].top,
+                        left: grid2['2x0']!.left,
+                        top: grid2['2x0']!.top,
                         size: squareSize,
                         dataColor: 'deepOrange',
                         color: Colors.deepOrange,
@@ -152,10 +275,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 0,
-                        top: 110,
+                        // left: posLeft + (squareSize * 3) + (3 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        // left: grid[3].left,
+                        // top: grid[3].top,
+                        left: grid2['3x0']!.left,
+                        top: grid2['3x0']!.top,
                         size: squareSize,
                         dataColor: 'orange',
                         color: Colors.orange,
@@ -164,10 +292,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 110,
-                        top: 110,
+                        // left: posLeft + (squareSize * 4) + (4 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        // left: grid[4].left,
+                        // top: grid[4].top,
+                        left: grid2['4x0']!.left,
+                        top: grid2['4x0']!.top,
                         size: squareSize,
                         dataColor: 'yellow',
                         color: Colors.yellow,
@@ -176,10 +309,40 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      // Test for 6 in a row
+                      DragObject(
+                        // left: posLeft + (squareSize * 5) + (5 * boardPad),
+                        // top: posTop + (squareSize * 0) + (0 * boardPad),
+                        left: grid2['5x0']!.left,
+                        top: grid2['5x0']!.top,
+                        size: squareSize,
+                        dataColor: 'black',
+                        color: Colors.black,
+                        canAccept:
+                            selectedColor != 'black' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 220,
-                        top: 110,
+                        left: posLeft + (squareSize * 0) + (0 * boardPad),
+                        top: posTop + (squareSize * 1) + (1 * boardPad),
+                        size: squareSize,
+                        dataColor: 'lime',
+                        color: Colors.lime,
+                        canAccept:
+                            selectedColor != 'lime' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 1) + (1 * boardPad),
+                        top: posTop + (squareSize * 1) + (1 * boardPad),
                         size: squareSize,
                         dataColor: 'green',
                         color: Colors.green,
@@ -188,10 +351,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 0,
-                        top: 220,
+                        left: posLeft + (squareSize * 2) + (2 * boardPad),
+                        top: posTop + (squareSize * 1) + (1 * boardPad),
                         size: squareSize,
                         dataColor: 'teal',
                         color: Colors.teal,
@@ -200,10 +364,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 110,
-                        top: 220,
+                        left: posLeft + (squareSize * 3) + (3 * boardPad),
+                        top: posTop + (squareSize * 1) + (1 * boardPad),
                         size: squareSize,
                         dataColor: 'cyan',
                         color: Colors.cyan,
@@ -212,10 +377,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 220,
-                        top: 220,
+                        left: posLeft + (squareSize * 4) + (4 * boardPad),
+                        top: posTop + (squareSize * 1) + (1 * boardPad),
                         size: squareSize,
                         dataColor: 'blue',
                         color: Colors.blue,
@@ -224,10 +390,37 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 00,
-                        top: 330,
+                        left: posLeft + (squareSize * 0) + (0 * boardPad),
+                        top: posTop + (squareSize * 2) + (2 * boardPad),
+                        size: squareSize,
+                        dataColor: 'blueGrey',
+                        color: Colors.blueGrey,
+                        canAccept:
+                            selectedColor != 'blueGrey' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 1) + (1 * boardPad),
+                        top: posTop + (squareSize * 2) + (2 * boardPad),
+                        size: squareSize,
+                        dataColor: 'blueAccent',
+                        color: Colors.blueAccent,
+                        canAccept: selectedColor != 'blueAccent' &&
+                            selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 2) + (2 * boardPad),
+                        top: posTop + (squareSize * 2) + (2 * boardPad),
                         size: squareSize,
                         dataColor: 'indigo',
                         color: Colors.indigo,
@@ -236,10 +429,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 110,
-                        top: 330,
+                        left: posLeft + (squareSize * 3) + (3 * boardPad),
+                        top: posTop + (squareSize * 2) + (2 * boardPad),
                         size: squareSize,
                         dataColor: 'purple',
                         color: Colors.purple,
@@ -248,10 +442,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
                       DragObject(
-                        left: 220,
-                        top: 330,
+                        left: posLeft + (squareSize * 4) + (4 * boardPad),
+                        top: posTop + (squareSize * 2) + (2 * boardPad),
                         size: squareSize,
                         dataColor: 'deepPurple',
                         color: Colors.deepPurple,
@@ -260,30 +455,86 @@ class _MyHomePageState extends State<MyHomePage> {
                         canDrag: canDrag,
                         onTapDown: colorSelected,
                         onTapUp: resetDraggables,
+                        changePositions: changePositions,
                       ),
-                      // Positioned(
-                      //   left: 110,
-                      //   top: 330,
-                      //   child: DragTarget(
-                      //     builder: ((context, candidateData, rejectedData) {
-                      //       return Container(
-                      //         height: squareSize,
-                      //         width: squareSize,
-                      //         color: Colors.purple,
-                      //       );
-                      //     }),
-                      //     onWillAccept: (data) {
-                      //       print('purple will accept $data');
-                      //       return data == 'purple';
-                      //     },
-                      //     onAccept: (data) {
-                      //       print('purple accepted $data');
-                      //     },
-                      //     onLeave: (data) {
-                      //       print('$data left purple');
-                      //     },
-                      //   ),
-                      // ),
+                      DragObject(
+                        left: posLeft + (squareSize * 0) + (0 * boardPad),
+                        top: posTop + (squareSize * 3) + (3 * boardPad),
+                        size: squareSize,
+                        dataColor: 'brown',
+                        color: Colors.brown,
+                        canAccept:
+                            selectedColor != 'brown' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 1) + (1 * boardPad),
+                        top: posTop + (squareSize * 3) + (3 * boardPad),
+                        size: squareSize,
+                        dataColor: 'grey',
+                        color: Colors.grey,
+                        canAccept:
+                            selectedColor != 'grey' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 2) + (2 * boardPad),
+                        top: posTop + (squareSize * 3) + (3 * boardPad),
+                        size: squareSize,
+                        dataColor: 'black',
+                        color: Colors.black,
+                        canAccept:
+                            selectedColor != 'black' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 3) + (3 * boardPad),
+                        top: posTop + (squareSize * 3) + (3 * boardPad),
+                        size: squareSize,
+                        dataColor: 'amber',
+                        color: Colors.amber,
+                        canAccept:
+                            selectedColor != 'amber' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 4) + (4 * boardPad),
+                        top: posTop + (squareSize * 3) + (3 * boardPad),
+                        size: squareSize,
+                        dataColor: 'pinkAccent',
+                        color: Colors.pinkAccent,
+                        canAccept: selectedColor != 'pinkAccent' &&
+                            selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
+                      DragObject(
+                        left: posLeft + (squareSize * 0) + (0 * boardPad),
+                        top: posTop + (squareSize * 4) + (4 * boardPad),
+                        size: squareSize,
+                        dataColor: 'black54',
+                        color: Colors.black54,
+                        canAccept:
+                            selectedColor != 'black54' && selectedColor != '',
+                        canDrag: canDrag,
+                        onTapDown: colorSelected,
+                        onTapUp: resetDraggables,
+                        changePositions: changePositions,
+                      ),
                     ],
                   ),
                 ),
@@ -292,53 +543,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      // body: Container(
-      //   child: Center(
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       children: [
-      //         Draggable<String>(
-      //           data: 'red',
-      //           feedback: Container(
-      //             height: 100,
-      //             width: 100,
-      //             color: Colors.red[700],
-      //           ),
-      //           childWhenDragging: Container(
-      //             height: 100,
-      //             width: 100,
-      //             color: Colors.red.withOpacity(0.5),
-      //           ),
-      //           child: Container(
-      //             height: 100,
-      //             width: 100,
-      //             color: Colors.red,
-      //           ),
-      //         ),
-      //         const SizedBox(height: 10),
-      //         DragTarget(
-      //           builder: ((context, candidateData, rejectedData) {
-      //             return Container(
-      //               height: 100,
-      //               width: 100,
-      //               color: Colors.green,
-      //             );
-      //           }),
-      //           onWillAccept: (data) {
-      //             print('will accept: $data');
-      //             return data == 'green';
-      //           },
-      //           onAccept: (data) {
-      //             print('accepted: $data');
-      //           },
-      //           onLeave: (data) {
-      //             print('on leave: $data');
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }
@@ -355,6 +559,7 @@ class DragObject extends StatelessWidget {
     required this.canDrag,
     required this.onTapDown,
     required this.onTapUp,
+    required this.changePositions,
   }) : super(key: key);
 
   final double left;
@@ -366,16 +571,15 @@ class DragObject extends StatelessWidget {
   final bool canDrag;
   final Function(String) onTapDown;
   final VoidCallback onTapUp;
+  final Function(Object, String) changePositions;
 
   @override
   Widget build(BuildContext context) {
-    // print('$dataColor can accept: $canAccept');
     return Positioned(
       left: left,
       top: top,
       child: InkWell(
         onTapDown: (_) => onTapDown(dataColor),
-        // onTapCancel: () => onTapUp,
         child: Stack(
           children: [
             canAccept
@@ -390,6 +594,7 @@ class DragObject extends StatelessWidget {
                     }),
                     onWillAccept: (data) {
                       print('$dataColor will accept $data');
+                      changePositions(data ?? {}, dataColor);
                       return data == dataColor;
                     },
                     onAccept: (data) {
