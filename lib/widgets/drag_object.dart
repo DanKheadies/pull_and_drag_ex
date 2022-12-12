@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 class DragObject extends StatelessWidget {
   const DragObject({
     Key? key,
+    required this.id,
     required this.left,
     required this.top,
     required this.size,
-    required this.dataColor,
+    required this.text,
     required this.color,
     required this.canAccept,
     required this.canDrag,
@@ -15,25 +16,26 @@ class DragObject extends StatelessWidget {
     required this.changePositions,
   }) : super(key: key);
 
+  final String id;
   final double left;
   final double top;
   final double size;
-  final String dataColor;
+  final String text;
   final Color color;
   final bool canAccept;
   final bool canDrag;
   final Function(String) onTapDown;
-  final VoidCallback onTapUp;
+  final Function(String) onTapUp;
   final Function(Object, String) changePositions;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 150),
       left: left,
       top: top,
       child: InkWell(
-        onTapDown: (_) => onTapDown(dataColor),
+        onTapDown: (_) => onTapDown(id),
         child: Stack(
           children: [
             canAccept
@@ -42,40 +44,95 @@ class DragObject extends StatelessWidget {
                       return Container(
                         height: size,
                         width: size,
-                        // color: Colors.transparent,
-                        color: color,
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(50),
+                            color: color,
+                          ),
+                          child: Center(
+                              // child: text == '' ? const SizedBox() : Text(text),
+                              ),
+                        ),
                       );
                     }),
                     onWillAccept: (incoming) {
                       // print(data);
-                      // print('$dataColor will accept $incoming');
-                      changePositions(incoming ?? {}, dataColor);
-                      return incoming == dataColor;
+                      // print('$id will accept $incoming');
+                      changePositions(incoming ?? {}, id);
+                      return incoming == id;
                     },
                     onAccept: (data) {
-                      // print('$dataColor accepted $data');
+                      // print('$id accepted $data');
                     },
                     onLeave: (data) {
-                      // print('$data left $dataColor');
+                      // print('$data left $id');
                     },
                   )
                 : Draggable<String>(
-                    data: dataColor,
+                    data: id,
                     feedback: Container(
                       height: size,
                       width: size,
-                      color: color.withOpacity(0.666),
+                      padding: const EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                          color: color.withOpacity(0.666),
+                        ),
+                        child: const Center(
+                            // child: text == ''
+                            //     ? const SizedBox()
+                            //     : DefaultTextStyle(
+                            //         style: const TextStyle(
+                            //           fontSize: 20,
+                            //           color: Colors.black,
+                            //         ),
+                            //         child: Text(text),
+                            //       ),
+                            ),
+                      ),
                     ),
                     childWhenDragging: Container(
                       height: size,
                       width: size,
-                      color: color.withOpacity(0.333),
+                      padding: const EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black.withOpacity(0.333),
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                          color: color.withOpacity(0.333),
+                        ),
+                        child: Center(
+                            // child: text == '' ? const SizedBox() : Text(text),
+                            ),
+                      ),
                     ),
-                    onDragEnd: (_) => onTapUp(),
+                    onDragEnd: (_) => onTapUp(id),
                     child: Container(
                       height: size,
                       width: size,
-                      color: color,
+                      padding: const EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                          color: color,
+                        ),
+                        child: Center(
+                            // child: text == '' ? const SizedBox() : Text(text),
+                            ),
+                      ),
                     ),
                   ),
           ],
